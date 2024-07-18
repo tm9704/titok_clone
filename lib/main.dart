@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:titok_clone/constants/gaps.dart';
-import 'package:titok_clone/constants/sizes.dart';
-import 'package:titok_clone/screens/sign_up/sign_up_screen.dart';
+import 'package:titok_clone/features/authentication/sign_up_screen.dart';
 
 void main() {
   runApp(const TitokApp());
