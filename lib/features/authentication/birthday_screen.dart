@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:titok_clone/constants/gaps.dart';
 import 'package:titok_clone/constants/sizes.dart';
-import 'package:titok_clone/features/authentication/email_screen.dart';
 import 'package:titok_clone/features/authentication/widgets/form_button.dart';
 import 'package:titok_clone/features/onboarding/interests_screen.dart';
 
