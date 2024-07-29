@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:titok_clone/constants/gaps.dart';
 import 'package:titok_clone/constants/sizes.dart';
 import 'package:titok_clone/features/authentication/widgets/form_button.dart';
+import 'package:titok_clone/features/onboarding/interests_screen.dart';
 
 class LoginFormScreen extends StatefulWidget {
   const LoginFormScreen({super.key});
@@ -17,6 +18,11 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
     if (_formKey.currentState != null) {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const InterestsScreen(),
+          ),
+        );
       }
     }
   }
@@ -37,20 +43,46 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
             children: [
               Gaps.v28,
               TextFormField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Email',
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
                 ),
                 validator: (value) {
-                  return "i dont like your email";
+                  if (value != null && value.isEmpty) {
+                    return "i dont like your email";
+                  }
+                  return null;
                 },
               ),
               Gaps.v16,
               TextFormField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Password',
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
                 ),
                 validator: (value) {
-                  return 'wrong password';
+                  if (value != null && value.isEmpty) {
+                    return 'wrong password';
+                  }
+                  return null;
                 },
               ),
               Gaps.v28,

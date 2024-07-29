@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:titok_clone/constants/sizes.dart';
-import 'package:titok_clone/features/authentication/sign_up_screen.dart';
+import 'package:titok_clone/features/onboarding/interests_screen.dart';
 
 void main() {
   runApp(const TitokApp());
@@ -28,7 +28,7 @@ class TitokApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         primaryColor: const Color(0xFFE9435A),
       ),
-      home: const SignUpScreen(),
+      home: const InterestsScreen(),
     );
   }
 }
