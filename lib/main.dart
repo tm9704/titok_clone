@@ -28,7 +28,7 @@ class TitokApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         primaryColor: const Color(0xFFE9435A),
       ),
-      home: MainNavigationScreen(),
+      home: const MainNavigationScreen(),
     );
   }
 }
