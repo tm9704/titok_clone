@@ -36,6 +36,12 @@ class _VideoTimelineScreenState extends State<VideoTimelineScreen> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PageView.builder(
       controller: _pageController,
@@ -43,7 +49,7 @@ class _VideoTimelineScreenState extends State<VideoTimelineScreen> {
       scrollDirection: Axis.vertical,
       itemCount: _itemCount,
       itemBuilder: (context, index) =>
-          VideoPost(onVideoFinished: _onVideoFinished),
+          VideoPost(onVideoFinished: _onVideoFinished, index: index),
     );
   }
 }
