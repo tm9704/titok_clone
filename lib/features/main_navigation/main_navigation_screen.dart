@@ -25,9 +25,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: const Text("Record video"),
-          ),
+          appBar: AppBar(title: const Text("Record video")),
         ),
         fullscreenDialog: true,
       ),
