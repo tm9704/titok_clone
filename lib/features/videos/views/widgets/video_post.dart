@@ -1,13 +1,18 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:titok_clone/common/widgets/video_config/video_config.dart';
 import 'package:titok_clone/constants/gaps.dart';
 import 'package:titok_clone/constants/sizes.dart';
-import 'package:titok_clone/features/videos/widgets/video_button.dart';
-import 'package:titok_clone/features/videos/widgets/video_comment.dart';
+import 'package:titok_clone/features/videos/view_models/playback_config_vm.dart';
+import 'package:titok_clone/features/videos/views/widgets/video_button.dart';
+import 'package:titok_clone/features/videos/views/widgets/video_comment.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-class VideoPost extends StatefulWidget {
+class VideoPost extends ConsumerStatefulWidget {
   final Function onVideoFinished;
   final int index;
 
@@ -18,10 +23,10 @@ class VideoPost extends StatefulWidget {
   });
 
   @override
-  State<VideoPost> createState() => _VideoPostState();
+  VideoPostState createState() => VideoPostState();
 }
 
-class _VideoPostState extends State<VideoPost>
+class VideoPostState extends ConsumerState<VideoPost>
     with SingleTickerProviderStateMixin {
   final VideoPlayerController _videoPlayerController =
       VideoPlayerController.asset("assets/videos/sample.mp4");
@@ -31,6 +36,8 @@ class _VideoPostState extends State<VideoPost>
   late final AnimationController _animationController;
 
   bool _isPaused = false;
+
+  final bool _isMuted = false;
 
   void _onVideoChange() {
     if (_videoPlayerController.value.isInitialized) {
@@ -44,6 +51,9 @@ class _VideoPostState extends State<VideoPost>
   void _initVideoPlayer() async {
     await _videoPlayerController.initialize();
     await _videoPlayerController.setLooping(true);
+    if (kIsWeb) {
+      await _videoPlayerController.setVolume(0);
+    }
     _videoPlayerController.addListener(_onVideoChange);
     setState(() {});
   }
@@ -60,22 +70,37 @@ class _VideoPostState extends State<VideoPost>
       value: 1.5,
       duration: _animationDuration,
     );
-    // _animationController.addListener(() {
-    //   setState(() {});
-    // });
   }
 
   @override
   void dispose() {
     _videoPlayerController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
-  void _onVisibilityChange(VisibilityInfo info) {
+  void _onPlaybackConfigChanged() {
+    if (!mounted) return;
+    final muted = ref.read(playbackConfigProvider).muted;
+    ref.read(playbackConfigProvider.notifier).setMuted(!muted);
+    if (muted) {
+      _videoPlayerController.setVolume(0);
+    } else {
+      _videoPlayerController.setVolume(1);
+    }
+  }
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (!mounted) return;
     if (info.visibleFraction == 1 &&
         !_isPaused &&
         !_videoPlayerController.value.isPlaying) {
-      _videoPlayerController.play();
+      if (ref.read(playbackConfigProvider).autoplay) {
+        _videoPlayerController.play();
+      }
+    }
+    if (_videoPlayerController.value.isPlaying && info.visibleFraction == 0) {
+      _onTogglePause();
     }
   }
 
@@ -87,13 +112,12 @@ class _VideoPostState extends State<VideoPost>
       _videoPlayerController.play();
       _animationController.forward();
     }
-
     setState(() {
       _isPaused = !_isPaused;
     });
   }
 
-  void _onCommentsTap(BuildContext context) async {
+  void onCommentsTap(BuildContext context) async {
     if (_videoPlayerController.value.isPlaying) {
       _onTogglePause();
     }
@@ -110,7 +134,7 @@ class _VideoPostState extends State<VideoPost>
   Widget build(BuildContext context) {
     return VisibilityDetector(
       key: Key("${widget.index}"),
-      onVisibilityChanged: _onVisibilityChange,
+      onVisibilityChanged: _onVisibilityChanged,
       child: Stack(
         children: [
           Positioned.fill(
@@ -149,6 +173,19 @@ class _VideoPostState extends State<VideoPost>
               ),
             ),
           ),
+          Positioned(
+            left: 20,
+            top: 40,
+            child: IconButton(
+              icon: FaIcon(
+                ref.watch(playbackConfigProvider).muted
+                    ? FontAwesomeIcons.volumeOff
+                    : FontAwesomeIcons.volumeHigh,
+                color: Colors.white,
+              ),
+              onPressed: _onPlaybackConfigChanged,
+            ),
+          ),
           const Positioned(
             bottom: 20,
             left: 10,
@@ -183,8 +220,9 @@ class _VideoPostState extends State<VideoPost>
                   radius: 25,
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
+                  foregroundImage: NetworkImage(
+                      "https://github.com/user-attachments/assets/474dd173-a22c-4c0b-8c3c-adf4309f4a7a"),
                   child: Text("Min"),
-                  //foregroundImage: NetworkImage(url),
                 ),
                 Gaps.v24,
                 const VideoButton(
@@ -193,7 +231,7 @@ class _VideoPostState extends State<VideoPost>
                 ),
                 Gaps.v24,
                 GestureDetector(
-                  onTap: () => _onCommentsTap(context),
+                  onTap: () => onCommentsTap(context),
                   child: const VideoButton(
                     icon: FontAwesomeIcons.solidComment,
                     text: "33K",
